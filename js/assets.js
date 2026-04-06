@@ -130,3 +130,9 @@ document.addEventListener("DOMContentLoaded", () => {
   renderAssets();
   setInterval(renderAssets, 5000);
 });
+
+let username = document.getElementById("userNameDisplay");
+
+if (user) {
+  username.innerText = JSON.parse(user).username;
+}

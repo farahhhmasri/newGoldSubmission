@@ -400,82 +400,98 @@ pricecardmain.addEventListener("click", (event) => {
   }
 });
 
-let news = document.getElementById("news");
-let savednews = JSON.parse(localStorage.getItem("news")) || [];
-let lastFetch = parseInt(localStorage.getItem("newsTime"));
-let now = Date.now();
 
-//  10 minutes = 600000 ms
-if (savednews.length > 0 && lastFetch && now - lastFetch < 600000) {
-  displayNews(savednews);
-} else {
-  fetch(
-    "https://newsdata.io/api/1/latest?apikey=pub_8cdfe34522554af9bab8604d4a8294f9&q=economy OR politics&language=en",
-  )
-    .then((res) => res.json())
-    .then((data) => {
-      let articles = data.results.slice(0, 4);
 
-      localStorage.setItem("news", JSON.stringify(articles));
-      localStorage.setItem("newsTime", now);
+ 
+ let news= document.getElementById("news");
+  let savedNews = JSON.parse(localStorage.getItem("newsData")) || [];
+  let lastFetchTim= parseInt(localStorage.getItem("newsTime")) || 0;
+let  data =Date.now();
 
-      displayNews(articles);
-    })
+if(savedNews.length > 0 && lastFetchTim && data - lastFetchTim < 600000){
+    displayNews(savedNews);
+}
+
+
+else{
+
+
+   fetch ("https://newsdata.io/api/1/latest?apikey=pub_8cdfe34522554af9bab8604d4a8294f9&q=economy OR politics&language=en")
+   
+    .then(res => res.json())
+        .then(data => {
+let articles = data.results ? data.results.slice(0,10) : [];          
+  localStorage.setItem("newsData", JSON.stringify(articles));
+            localStorage.setItem("newsTime",date.now() );
+ 
+
+            displayNews(articles);
+        })
     .catch(() => {
-      console.log("API Error");
-
-      // fallback
-      if (savednews.length > 0) {
-        displayNews(savednews);
-      }
-    });
+        console.log("API Error");
+   
+   if(savedNews.length > 0){
+        displayNews(savedNews);
+    }
+})
 }
+ function displayNews(articles){
+    
+    news.innerHTML = "";
+    
+      
+ articles.forEach(element => {
+    
+      let div =document.createElement("div");
+      div.classList.add("swiper-slide");
+        div.innerHTML = `
+        <div class="content">
+            <h3> <label class="lable" > Latest News | </label> ${element.title}</h3>
+        </div>
+        `
 
-function displayNews(articles) {
-  news.innerHTML = ""; // clear old slides
-
-  articles.forEach((article) => {
-    let div = document.createElement("div");
-    div.classList.add("swiper-slide");
-
-    div.innerHTML = `
-            <div class="content">
-                <h3> <label class="lable"> Latest News | </label> ${article.title}</h3>
-            </div>
-        `;
-
-    // make slide clickable
-    div.addEventListener("click", () => {
-      if (article.link) {
-        window.open(article.link, "_blank");
-      }
-    });
-
-    news.appendChild(div);
+  div.addEventListener("click", () => {
+    window.open(element.link, "_blank");
   });
 
-  new Swiper(".swiper", {
-    loop: true,
-    slidesPerView: "auto",
-    spaceBetween: 50,
-    speed: 4000,
+          news.appendChild(div);
 
-    autoplay: {
-      delay: 4000,
-      disableOnInteraction: false,
+ });
+  
+new Swiper(".swiper",{
+    loop:false,
+    freeMode: true,
+
+   slidesPerView: "auto",
+  spaceBetween: 50,
+     speed: 800,
+
+    autoplay: { 
+        delay: 4000,
+        disableOnInteraction: false,
     },
 
-    pagination: {
-      el: ".swiper-pagination",
-      clickable: true,
-    },
+    pagination:({
+        el:".swiper-pagination",
+        clickable:true,
+    })
 
-    navigation: {
-      nextEl: ".swiper-button-next",
-      prevEl: ".swiper-button-prev",
-    },
-  });
+,
+navigation:{
+
+nextEl:".swiper-button-next",
+prevEl:".swiper-button-prev",
+
 }
+
+
+
+})
+    
+ }
+
+
+
 
 // const the_animation = document.querySelectorAll(".animation");
 // const observer = new IntersectionObserver(
@@ -514,3 +530,6 @@ if (user) {
   authLink.innerText = "Login";
   authLink.href = "../login.html"; //  هون عادي
 }
+
+
+
